@@ -152,7 +152,12 @@
       transform: scale(1.1);
     }
 
+    /* ✅ Responsive Update */
     @media (max-width: 768px) {
+      #dino, #cactus {
+        bottom: 25vh; /* Move up to 3/4 of screen from top */
+      }
+
       #dino {
         height: 170px;
       }
@@ -201,7 +206,6 @@
   <div id="baseline"></div>
 </div>
 
-<!-- Game Over Overlay -->
 <div id="gameOverScreen">
   <div class="game-over-text">Game Over</div>
   <div class="replay-icon" onclick="location.reload()">
@@ -209,7 +213,6 @@
   </div>
 </div>
 
-<!-- Audio -->
 <audio id="jumpSound" src="https://cdn.freesound.org/previews/386/386629_3905081-lq.mp3"></audio>
 <audio id="collisionSound" src="https://cdn.freesound.org/previews/391/391658_7368738-lq.mp3"></audio>
 
@@ -271,7 +274,6 @@
     if (e.code === "Space") jump();
   });
 
-  // ✅ Mobile touch support
   gameArea.addEventListener("touchstart", jump);
 
   const collisionCheck = setInterval(() => {
