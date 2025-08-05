@@ -239,36 +239,41 @@
   };
 
   function jump() {
-    if (isJumping || gameOver) return;
-    isJumping = true;
-    jumpSound.currentTime = 0;
-    jumpSound.play();
-    dinoImg.src = frames.bend1;
+      if (isJumping || gameOver) return;
+      isJumping = true;
+    
+      jumpSound.currentTime = 0;
+      jumpSound.play();
+      dinoImg.src = frames.bend1;
+    
+      setTimeout(() => {
+        dinoImg.src = frames.jump;
+      }, 100);
+    
+      const baseBottom = parseFloat(getComputedStyle(dino).bottom); // ← capture starting bottom
+      let relativePosition = 0;
+    
+      const upInterval = setInterval(() => {
+        if (relativePosition >= 200) {
+          clearInterval(upInterval);
+          const downInterval = setInterval(() => {
+            if (relativePosition <= 0) {
+              clearInterval(downInterval);
+              isJumping = false;
+              dinoImg.src = frames.bend2;
+              setTimeout(() => dinoImg.src = frames.stand1, 100);
+            } else {
+              relativePosition -= 10;
+              dino.style.bottom = baseBottom + relativePosition + "px";
+            }
+          }, 15);
+        } else {
+          relativePosition += 10;
+          dino.style.bottom = baseBottom + relativePosition + "px";
+        }
+      }, 15);
+    }
 
-    setTimeout(() => {
-      dinoImg.src = frames.jump;
-    }, 100);
-
-    let upInterval = setInterval(() => {
-      if (position >= 200) {
-        clearInterval(upInterval);
-        let downInterval = setInterval(() => {
-          if (position <= 0) {
-            clearInterval(downInterval);
-            isJumping = false;
-            dinoImg.src = frames.bend2;
-            setTimeout(() => dinoImg.src = frames.stand1, 100);
-          } else {
-            position -= 10;
-            dino.style.bottom = position + 10 + "px";
-          }
-        }, 15);
-      } else {
-        position += 10;
-        dino.style.bottom = position + 10 + "px";
-      }
-    }, 15);
-  }
 
   document.addEventListener("keydown", (e) => {
     if (e.code === "Space") jump();
