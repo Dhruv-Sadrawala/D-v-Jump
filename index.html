@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/favicon.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta property="og:description" content="Jump over bugs and survive the IT jungle with your laptop!" />
   <meta property="og:image" content="https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/og.png" />
   <meta property="og:type" content="website" />
   <title>D^v Jump – Jump Over Bugs and Compile to Glory</title>
 
-  <!-- Pixel Font -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
   <style>
@@ -55,7 +54,7 @@
       bottom: 0;
       width: 100%;
       height: 40px;
-      background: url('ground.png') repeat-x;
+      background: url('https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/ground.png') repeat-x;
       z-index: 2;
     }
 
@@ -120,7 +119,6 @@
       z-index: 10;
     }
 
-    /* Game Over Overlay */
     #gameOverScreen {
       position: fixed;
       top: 0;
@@ -144,14 +142,9 @@
     }
 
     .replay-icon {
-      font-family: 'Press Start 2P', cursive;
-      font-size: 50px;
-      color: white;
       cursor: pointer;
       padding: 16px 24px;
-      background-color: rgba(255, 255, 255, 0.1);
       border-radius: 12px;
-      text-shadow: 1px 1px 3px #000;
       transition: transform 0.2s;
     }
 
@@ -159,7 +152,6 @@
       transform: scale(1.1);
     }
 
-    /* ✅ RESPONSIVENESS without changing actual element sizes */
     @media (max-width: 768px) {
       #dino {
         height: 170px;
@@ -167,12 +159,11 @@
 
       #cactus {
         height: 80px;
-        animation: moveCactus 3s linear infinite;
         animation-duration: 1.5s !important;
       }
 
       #cactus img {
-        height: 70%; /* Adjust image scaling */
+        height: 70%;
       }
 
       .game-over-text {
@@ -188,12 +179,11 @@
         font-size: 15px;
       }
     }
-
   </style>
 </head>
 <body>
 
-<div class="game">
+<div class="game" id="gameArea">
   <div class="background"></div>
   <div class="overlay"></div>
 
@@ -219,7 +209,7 @@
   </div>
 </div>
 
-<!-- ✅ Audio Elements -->
+<!-- Audio -->
 <audio id="jumpSound" src="https://cdn.freesound.org/previews/386/386629_3905081-lq.mp3"></audio>
 <audio id="collisionSound" src="https://cdn.freesound.org/previews/391/391658_7368738-lq.mp3"></audio>
 
@@ -229,9 +219,9 @@
   const cactus = document.getElementById("cactus");
   const scoreDisplay = document.getElementById("score");
   const gameOverScreen = document.getElementById("gameOverScreen");
-
-  const jumpSound = document.getElementById("jumpSound"); // ✅
-  const collisionSound = document.getElementById("collisionSound"); // ✅
+  const jumpSound = document.getElementById("jumpSound");
+  const collisionSound = document.getElementById("collisionSound");
+  const gameArea = document.getElementById("gameArea");
 
   let isJumping = false;
   let position = 0;
@@ -245,16 +235,11 @@
     bend2: "https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/bend2.png"
   };
 
-  document.addEventListener("keydown", function (event) {
-    if (event.code === "Space" && !isJumping && !gameOver) {
-      jump();
-    }
-  });
-
   function jump() {
+    if (isJumping || gameOver) return;
     isJumping = true;
-    jumpSound.currentTime = 0; // ✅
-    jumpSound.play(); // ✅
+    jumpSound.currentTime = 0;
+    jumpSound.play();
     dinoImg.src = frames.bend1;
 
     setTimeout(() => {
@@ -264,16 +249,12 @@
     let upInterval = setInterval(() => {
       if (position >= 200) {
         clearInterval(upInterval);
-
         let downInterval = setInterval(() => {
           if (position <= 0) {
             clearInterval(downInterval);
             isJumping = false;
             dinoImg.src = frames.bend2;
-
-            setTimeout(() => {
-              dinoImg.src = frames.stand1;
-            }, 100);
+            setTimeout(() => dinoImg.src = frames.stand1, 100);
           } else {
             position -= 10;
             dino.style.bottom = position + 10 + "px";
@@ -286,26 +267,29 @@
     }, 15);
   }
 
+  document.addEventListener("keydown", (e) => {
+    if (e.code === "Space") jump();
+  });
+
+  // ✅ Mobile touch support
+  gameArea.addEventListener("touchstart", jump);
+
   const collisionCheck = setInterval(() => {
     const dinoRect = dino.getBoundingClientRect();
     const cactusRect = cactus.getBoundingClientRect();
+    const bufferX = 40, bufferY = 40;
 
-    const bufferX = 40;
-    const bufferY = 40;
+    const horizontal = cactusRect.left < dinoRect.right - bufferX &&
+                       cactusRect.right > dinoRect.left + bufferX;
+    const vertical = dinoRect.bottom - bufferY > cactusRect.top;
 
-    const isHorizontallyOverlapping = cactusRect.left < dinoRect.right - bufferX &&
-                                      cactusRect.right > dinoRect.left + bufferX;
-
-    const isVerticallyOverlapping = dinoRect.bottom - bufferY > cactusRect.top;
-
-    if (isHorizontallyOverlapping && isVerticallyOverlapping && !gameOver) {
+    if (horizontal && vertical && !gameOver) {
       gameOver = true;
       gameOverScreen.style.display = "flex";
       clearInterval(scoreInterval);
       cactus.style.animationPlayState = "paused";
-
-      collisionSound.currentTime = 0; // ✅
-      collisionSound.play(); // ✅
+      collisionSound.currentTime = 0;
+      collisionSound.play();
     }
   }, 10);
 
