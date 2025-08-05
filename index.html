@@ -164,7 +164,7 @@
 
       #cactus {
         height: 80px;
-        animation-duration: 2.75s !important;
+        animation-duration: 2.5s !important;
       }
 
       #cactus img {
@@ -284,7 +284,7 @@
   const collisionCheck = setInterval(() => {
     const dinoRect = dino.getBoundingClientRect();
     const cactusRect = cactus.getBoundingClientRect();
-    const bufferX = 40, bufferY = 40;
+    const bufferX = 50, bufferY = 50;
 
     const horizontal = cactusRect.left < dinoRect.right - bufferX &&
                        cactusRect.right > dinoRect.left + bufferX;
