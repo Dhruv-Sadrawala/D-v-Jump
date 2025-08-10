@@ -1,233 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/favicon.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta property="og:description" content="Jump over bugs and survive the IT jungle with your laptop!" />
-  <meta property="og:image" content="https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/og.png" />
-  <meta property="og:type" content="website" />
-  <title>D^v Jump – Jump Over Bugs and Compile to Glory</title>
-
-  <!-- Pixel Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #fff; }
-
-    .game { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
-
-    .background {
-      position: absolute; width: 100%; height: 100%;
-      background: url('bg.jpg') no-repeat center center;
-      background-size: cover; z-index: 0;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dino Jump Game</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: #f7f7f7;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: Arial, sans-serif;
     }
 
-    .overlay {
-      position: absolute; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.3); z-index: 1;
-    }
-
-    #ground {
-      position: absolute; bottom: 0; width: 100%; height: 40px;
-      background: url('ground.png') repeat-x; z-index: 2;
-    }
-
-    #baseline {
-      position: absolute; bottom: 25vh; /* ⬆ Moved baseline up */
-      width: 100%; height: 10px; background-color: #cdf0fc; z-index: 3;
+    .game {
+        position: relative;
+        width: 600px;
+        height: 200px;
+        border: 2px solid #333;
+        overflow: hidden;
+        background-color: white;
     }
 
     #dino {
-      width: 130px; height: 200px;
-      position: absolute; bottom: calc(25vh + 10px); /* ⬆ Match baseline height */
-      left: 50px; z-index: 4;
-    }
-
-    #dino img {
-      width: 100%; height: 100%; object-fit: contain;
-      image-rendering: pixelated;
+        position: absolute;
+        bottom: 0;
+        left: 50px;
+        width: 40px;
+        height: 40px;
+        background-color: #444;
+        border-radius: 5px;
     }
 
     #cactus {
-      width: 70px; height: 100px;
-      position: absolute; bottom: calc(25vh + 10px); /* ⬆ Same as dino */
-      right: -70px; animation: moveCactus 3s linear infinite; z-index: 4;
+        position: absolute;
+        bottom: 0;
+        right: -50px;
+        width: 20px;
+        height: 40px;
+        background-color: green;
+        display: none; /* hidden until game starts */
     }
 
-    #cactus img {
-      width: 100%; height: 120%; object-fit: contain;
-      image-rendering: pixelated;
+    .jump {
+        animation: jump 0.5s ease-out;
     }
 
-    @keyframes moveCactus {
-      0% { right: -70px; }
-      100% { right: 100vw; }
+    @keyframes jump {
+        0% { bottom: 0; }
+        50% { bottom: 80px; }
+        100% { bottom: 0; }
     }
-
-    #score {
-      position: absolute; top: 10px; right: 20px;
-      color: #fff; font-family: 'Press Start 2P', cursive;
-      font-size: 16px; background: rgba(0, 0, 0, 0.5);
-      padding: 4px 8px; border-radius: 4px;
-      box-shadow: 0 0 3px #000; z-index: 10;
-    }
-
-    #gameOverScreen {
-      position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.5);
-      z-index: 20; display: none;
-      flex-direction: column; justify-content: center; align-items: center;
-    }
-
-    .game-over-text {
-      font-family: 'Press Start 2P', cursive;
-      font-size: 50px; color: white;
-      margin-bottom: 30px; text-shadow: 2px 2px 5px #000;
-    }
-
-    .replay-icon {
-      font-family: 'Press Start 2P', cursive;
-      font-size: 50px; color: white; cursor: pointer;
-      padding: 16px 24px; background-color: rgba(255, 255, 255, 0.1);
-      border-radius: 12px; text-shadow: 1px 1px 3px #000;
-      transition: transform 0.2s;
-    }
-    .replay-icon:hover { transform: scale(1.1); }
-
-    @media (max-width: 768px) {
-      #dino { height: 170px; }
-      #cactus { height: 80px; animation-duration: 1.5s; }
-      #cactus img { height: 70%; }
-      .game-over-text { font-size: 30px; }
-      .replay-icon { font-size: 30px; padding: 12px 18px; }
-      #score { font-size: 15px; }
-    }
-  </style>
+</style>
 </head>
 <body>
 
-<div class="game" id="gameArea">
-  <div class="background"></div>
-  <div class="overlay"></div>
-
-  <div id="score">Score: 0</div>
-
-  <div id="dino">
-    <img id="dinoImg" src="stand1.png" alt="dino" />
-  </div>
-
-  <div id="cactus">
-    <img src="cactus.png" alt="cactus" />
-  </div>
-
-  <div id="ground"></div>
-  <div id="baseline"></div>
+<div class="game" id="game">
+    <div id="dino"></div>
+    <div id="cactus"></div>
 </div>
-
-<div id="gameOverScreen">
-  <div class="game-over-text">Game Over</div>
-  <div class="replay-icon" onclick="location.reload()">
-    <img src="retry.png" height="50px" width="50px" alt="Retry" />
-  </div>
-</div>
-
-<audio id="jumpSound" src="https://cdn.freesound.org/previews/386/386629_3905081-lq.mp3"></audio>
-<audio id="collisionSound" src="https://cdn.freesound.org/previews/391/391658_7368738-lq.mp3"></audio>
 
 <script>
-  const dino = document.getElementById("dino");
-  const dinoImg = document.getElementById("dinoImg");
-  const cactus = document.getElementById("cactus");
-  const scoreDisplay = document.getElementById("score");
-  const gameOverScreen = document.getElementById("gameOverScreen");
+    const dino = document.getElementById('dino');
+    const cactus = document.getElementById('cactus');
+    let isJumping = false;
+    let gameStarted = false;
+    let cactusInterval;
 
-  const jumpSound = document.getElementById("jumpSound");
-  const collisionSound = document.getElementById("collisionSound");
-
-  let isJumping = false;
-  let position = 0;
-  let score = 0;
-  let gameOver = false;
-  const isMobile = window.innerWidth <= 768;
-
-  const frames = {
-    stand1: "stand1.png",
-    bend1: "bend1.png",
-    jump: "jump1.png",
-    bend2: "bend2.png"
-  };
-
-  document.addEventListener("keydown", e => {
-    if (e.code === "Space" && !isJumping && !gameOver) jump();
-  });
-
-  document.getElementById("gameArea").addEventListener("touchstart", () => {
-    if (!isJumping && !gameOver) jump();
-  });
-
-  function jump() {
-    isJumping = true;
-    jumpSound.currentTime = 0;
-    jumpSound.play();
-    dinoImg.src = frames.bend1;
-
-    setTimeout(() => { dinoImg.src = frames.jump; }, 100);
-
-    let jumpHeight = isMobile ? 160 : 200;
-    let jumpStep = isMobile ? 7 : 10; // Faster jump on mobile
-
-    let upInterval = setInterval(() => {
-      if (position >= jumpHeight) {
-        clearInterval(upInterval);
-        let downInterval = setInterval(() => {
-          if (position <= 0) {
-            clearInterval(downInterval);
+    function jump() {
+        if (isJumping) return;
+        isJumping = true;
+        dino.classList.add('jump');
+        setTimeout(() => {
+            dino.classList.remove('jump');
             isJumping = false;
-            dinoImg.src = frames.bend2;
-            setTimeout(() => { dinoImg.src = frames.stand1; }, 100);
-          } else {
-            position -= jumpStep;
-            dino.style.bottom = `calc(${25}vh + 10px + ${position}px)`;
-          }
-        }, 15);
-      } else {
-        position += jumpStep;
-        dino.style.bottom = `calc(${25}vh + 10px + ${position}px)`;
-      }
-    }, 15);
-  }
-
-  const collisionCheck = setInterval(() => {
-    const dinoRect = dino.getBoundingClientRect();
-    const cactusRect = cactus.getBoundingClientRect();
-    const bufferX = 40, bufferY = 40;
-
-    const isHorizontallyOverlapping =
-      cactusRect.left < dinoRect.right - bufferX &&
-      cactusRect.right > dinoRect.left + bufferX;
-
-    const isVerticallyOverlapping =
-      dinoRect.bottom - bufferY > cactusRect.top;
-
-    if (isHorizontallyOverlapping && isVerticallyOverlapping && !gameOver) {
-      gameOver = true;
-      gameOverScreen.style.display = "flex";
-      clearInterval(scoreInterval);
-      cactus.style.animationPlayState = "paused";
-      collisionSound.currentTime = 0;
-      collisionSound.play();
+        }, 500);
     }
-  }, 10);
 
-  const scoreInterval = setInterval(() => {
-    if (!document.hidden && !gameOver) {
-      score++;
-      scoreDisplay.textContent = "Score: " + score;
+    function startCactusMovement() {
+        cactus.style.display = 'block';
+        cactus.style.right = '-50px';
+
+        cactusInterval = setInterval(() => {
+            let cactusRight = parseInt(getComputedStyle(cactus).right);
+            cactusRight += 5;
+            cactus.style.right = cactusRight + 'px';
+
+            if (cactusRight > 650) {
+                cactus.style.right = '-50px';
+            }
+
+            // Collision detection
+            let dinoBottom = parseInt(getComputedStyle(dino).bottom);
+            if (cactusRight > 500 && cactusRight < 550 && dinoBottom < 40) {
+                alert('Game Over!');
+                resetGame();
+            }
+        }, 20);
     }
-  }, 100);
+
+    function resetGame() {
+        clearInterval(cactusInterval);
+        cactus.style.display = 'none';
+        gameStarted = false;
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.code === 'Space') {
+            jump();
+            if (!gameStarted) {
+                gameStarted = true;
+                startCactusMovement();
+            }
+        }
+    });
+
+    document.addEventListener('touchstart', () => {
+        jump();
+        if (!gameStarted) {
+            gameStarted = true;
+            startCactusMovement();
+        }
+    });
 </script>
 
 </body>
