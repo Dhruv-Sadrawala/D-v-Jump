@@ -99,7 +99,7 @@
 
     @media (max-width: 768px) {
       #dino { height: 170px; }
-      #cactus { height: 80px; animation-duration: 2.5s; }
+      #cactus { height: 80px; animation-duration: 3s; }
       #cactus img { height: 70%; }
       .game-over-text { font-size: 30px; }
       .replay-icon { font-size: 30px; padding: 12px 18px; }
@@ -177,7 +177,7 @@
     setTimeout(() => { dinoImg.src = frames.jump; }, 100);
 
     let jumpHeight = isMobile ? 160 : 200;
-    let jumpStep = isMobile ? 7 : 10; // Faster jump on mobile
+    let jumpStep = isMobile ? 4 : 10; // Faster jump on mobile
 
     let upInterval = setInterval(() => {
       if (position >= jumpHeight) {
