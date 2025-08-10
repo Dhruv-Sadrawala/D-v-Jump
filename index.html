@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/favicon.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0">
   <meta property="og:description" content="Jump over bugs and survive the IT jungle with your laptop!" />
-  <meta property="og:image" content=url("https://i.ibb.co/DfZwPxgN/og.png")/>
+  <meta property="og:image" content="https://i.ibb.co/DfZwPxgN/og.png"/>
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1024">
   <meta property="og:image:height" content="1024">
-
   <meta property="og:type" content="website" />
   <title>D^v Jump – Jump Over Bugs and Compile to Glory</title>
 
@@ -18,58 +17,48 @@
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #fff; }
-
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #fff; touch-action: none; }
+    body { -webkit-user-select: none; -webkit-touch-callout: none; }
     .game { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
-
     .background {
       position: absolute; width: 100%; height: 100%;
       background: url('bg.jpg') no-repeat center center;
       background-size: cover; z-index: 0;
     }
-
     .overlay {
       position: absolute; width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.3); z-index: 1;
     }
-
     #ground {
       position: absolute; bottom: 0; width: 100%; height: 40px;
       background: url('ground.png') repeat-x; z-index: 2;
     }
-
     #baseline {
-      position: absolute; bottom: 25vh; /* ⬆ Moved baseline up */
+      position: absolute; bottom: 25vh;
       width: 100%; height: 10px; background-color: #cdf0fc; z-index: 3;
     }
-
     #dino {
       width: 130px; height: 200px;
-      position: absolute; bottom: calc(25vh + 10px); /* ⬆ Match baseline height */
+      position: absolute; bottom: calc(25vh + 10px);
       left: 50px; z-index: 4;
     }
-
     #dino img {
       width: 100%; height: 100%; object-fit: contain;
       image-rendering: pixelated;
     }
-
     #cactus {
       width: 70px; height: 100px;
-      position: absolute; bottom: calc(25vh + 10px); /* ⬆ Same as dino */
+      position: absolute; bottom: calc(25vh + 10px);
       right: -70px; animation: moveCactus 3s linear infinite; z-index: 4;
     }
-
     #cactus img {
       width: 100%; height: 120%; object-fit: contain;
       image-rendering: pixelated;
     }
-
     @keyframes moveCactus {
       0% { right: -70px; }
       100% { right: 100vw; }
     }
-
     #score {
       position: absolute; top: 10px; right: 20px;
       color: #fff; font-family: 'Press Start 2P', cursive;
@@ -77,7 +66,6 @@
       padding: 4px 8px; border-radius: 4px;
       box-shadow: 0 0 3px #000; z-index: 10;
     }
-
     #gameOverScreen {
       position: fixed; top: 0; left: 0;
       width: 100%; height: 100%;
@@ -85,13 +73,11 @@
       z-index: 20; display: none;
       flex-direction: column; justify-content: center; align-items: center;
     }
-
     .game-over-text {
       font-family: 'Press Start 2P', cursive;
       font-size: 50px; color: white;
       margin-bottom: 30px; text-shadow: 2px 2px 5px #000;
     }
-
     .replay-icon {
       font-family: 'Press Start 2P', cursive;
       font-size: 50px; color: white; cursor: pointer;
@@ -100,7 +86,7 @@
       transition: transform 0.2s;
     }
     .replay-icon:hover { transform: scale(1.1); }
-
+    /* Mobile only: */
     @media (max-width: 768px) {
       #dino { height: 170px; }
       #cactus { height: 80px; animation-duration: 1.5s; }
@@ -108,36 +94,62 @@
       .game-over-text { font-size: 30px; }
       .replay-icon { font-size: 30px; padding: 12px 18px; }
       #score { font-size: 15px; }
+      #mobileJumpBtn {
+        display: flex !important;
+      }
+    }
+    /* Mobile jump button styles */
+    #mobileJumpBtn {
+      display: none;
+      position: fixed;
+      bottom: 6vh;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      width: 160px;
+      height: 68px;
+      background: rgba(0,0,0,0.70);
+      color: #fff;
+      border: 3px solid #fff;
+      border-radius: 40px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 1.2rem;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 32px #0008;
+      outline: none;
+      user-select: none;
+      touch-action: manipulation;
+      transition: background .2s;
+    }
+    #mobileJumpBtn:active {
+      background: #fff;
+      color: #222;
+      border-color: #222;
     }
   </style>
 </head>
-<body>
-
+<body ontouchstart="">
 <div class="game" id="gameArea">
   <div class="background"></div>
   <div class="overlay"></div>
-
   <div id="score">Score: 0</div>
-
   <div id="dino">
     <img id="dinoImg" src="stand1.png" alt="dino" />
   </div>
-
   <div id="cactus">
     <img src="cactus.png" alt="cactus" />
   </div>
-
   <div id="ground"></div>
   <div id="baseline"></div>
 </div>
-
+<button id="mobileJumpBtn" tabindex="-1">JUMP</button>
 <div id="gameOverScreen">
   <div class="game-over-text">Game Over</div>
   <div class="replay-icon" onclick="location.reload()">
     <img src="retry.png" height="50px" width="50px" alt="Retry" />
   </div>
 </div>
-
 <audio id="jumpSound" src="https://cdn.freesound.org/previews/386/386629_3905081-lq.mp3"></audio>
 <audio id="collisionSound" src="https://cdn.freesound.org/previews/391/391658_7368738-lq.mp3"></audio>
 
@@ -147,15 +159,47 @@
   const cactus = document.getElementById("cactus");
   const scoreDisplay = document.getElementById("score");
   const gameOverScreen = document.getElementById("gameOverScreen");
-
   const jumpSound = document.getElementById("jumpSound");
   const collisionSound = document.getElementById("collisionSound");
+  const mobileJumpBtn = document.getElementById("mobileJumpBtn");
 
   let isJumping = false;
   let position = 0;
   let score = 0;
   let gameOver = false;
   const isMobile = window.innerWidth <= 768;
+
+  // Prevent scrolling (esp. on mobile)
+  document.body.addEventListener('touchmove', function(e){ e.preventDefault(); }, { passive: false });
+
+  // Prevent double-tap zoom
+  let lastTouch = 0;
+  document.body.addEventListener('touchend', function(e){
+    const now = Date.now();
+    if (now - lastTouch <= 300) e.preventDefault();
+    lastTouch = now;
+  }, { passive: false });
+
+  // Hide address bar (for some browsers)
+  window.addEventListener('load', function(){ setTimeout(() => window.scrollTo(0, 1), 0); });
+
+  // Show jump button if mobile
+  if(isMobile){
+    mobileJumpBtn.style.display = "flex";
+  }
+
+  // Audio mobile compatibility: unlock audio on first user interaction
+  function unlockAudio() {
+    [jumpSound, collisionSound].forEach(audio => {
+      audio.play().catch(()=>{}); // Try to play, will pause immediately
+      audio.pause();
+      audio.currentTime = 0;
+    });
+    window.removeEventListener('touchstart', unlockAudio, true);
+    window.removeEventListener('mousedown', unlockAudio, true);
+  }
+  window.addEventListener('touchstart', unlockAudio, true);
+  window.addEventListener('mousedown', unlockAudio, true);
 
   const frames = {
     stand1: "stand1.png",
@@ -164,24 +208,39 @@
     bend2: "bend2.png"
   };
 
+  // Desktop: space to jump
   document.addEventListener("keydown", e => {
-    if (e.code === "Space" && !isJumping && !gameOver) jump();
+    if ((e.code === "Space" || e.key === " ") && !isJumping && !gameOver) jump();
   });
 
-  document.getElementById("gameArea").addEventListener("touchstart", () => {
+  // Touch to jump (on the game area)
+  document.getElementById("gameArea").addEventListener("touchstart", e => {
+    if (!isJumping && !gameOver) {
+      e.preventDefault();
+      jump();
+    }
+  });
+
+  // Mobile jump button
+  mobileJumpBtn.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    if (!isJumping && !gameOver) jump();
+  });
+  mobileJumpBtn.addEventListener('mousedown', function(e) {
+    e.preventDefault();
     if (!isJumping && !gameOver) jump();
   });
 
   function jump() {
     isJumping = true;
-    jumpSound.currentTime = 0;
-    jumpSound.play();
+    try { jumpSound.currentTime = 0; jumpSound.play(); } catch(e){}
     dinoImg.src = frames.bend1;
 
     setTimeout(() => { dinoImg.src = frames.jump; }, 100);
 
-    let jumpHeight = isMobile ? 160 : 200;
-    let jumpStep = isMobile ? 7 : 10; // Faster jump on mobile
+    // Mobile-tuned jump height & speed
+    let jumpHeight = isMobile ? 135 : 200;
+    let jumpStep = isMobile ? 10 : 10; // Faster jump on mobile for snappier feel
 
     let upInterval = setInterval(() => {
       if (position >= jumpHeight) {
@@ -196,12 +255,12 @@
             position -= jumpStep;
             dino.style.bottom = `calc(${25}vh + 10px + ${position}px)`;
           }
-        }, 15);
+        }, 13);
       } else {
         position += jumpStep;
         dino.style.bottom = `calc(${25}vh + 10px + ${position}px)`;
       }
-    }, 15);
+    }, 13);
   }
 
   const collisionCheck = setInterval(() => {
@@ -212,7 +271,6 @@
     const isHorizontallyOverlapping =
       cactusRect.left < dinoRect.right - bufferX &&
       cactusRect.right > dinoRect.left + bufferX;
-
     const isVerticallyOverlapping =
       dinoRect.bottom - bufferY > cactusRect.top;
 
@@ -221,8 +279,7 @@
       gameOverScreen.style.display = "flex";
       clearInterval(scoreInterval);
       cactus.style.animationPlayState = "paused";
-      collisionSound.currentTime = 0;
-      collisionSound.play();
+      try { collisionSound.currentTime = 0; collisionSound.play(); } catch(e){}
     }
   }, 10);
 
@@ -232,7 +289,12 @@
       scoreDisplay.textContent = "Score: " + score;
     }
   }, 100);
-</script>
 
+  // Optional: make sure baseline is always right for all screen sizes on resize
+  window.addEventListener('resize', function() {
+    // If orientation or size changes, reload for best experience
+    location.reload();
+  });
+</script>
 </body>
 </html>
