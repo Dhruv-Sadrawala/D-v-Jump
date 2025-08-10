@@ -64,68 +64,111 @@
 </div>
 
 <script>
-    const dino = document.getElementById('dino');
-    const cactus = document.getElementById('cactus');
-    let isJumping = false;
-    let gameStarted = false;
-    let cactusInterval;
+  const dino = document.getElementById("dino");
+  const dinoImg = document.getElementById("dinoImg");
+  const cactus = document.getElementById("cactus");
+  const scoreDisplay = document.getElementById("score");
+  const gameOverScreen = document.getElementById("gameOverScreen");
 
-    function jump() {
-        if (isJumping) return;
-        isJumping = true;
-        dino.classList.add('jump');
-        setTimeout(() => {
-            dino.classList.remove('jump');
+  const jumpSound = document.getElementById("jumpSound");
+  const collisionSound = document.getElementById("collisionSound");
+
+  let isJumping = false;
+  let position = 0;
+  let score = 0;
+  let gameOver = false;
+  let cactusInDangerZone = false; // ⬅ NEW: flag to control when collision is active
+  const isMobile = window.innerWidth <= 768;
+
+  const frames = {
+    stand1: "stand1.png",
+    bend1: "bend1.png",
+    jump: "jump1.png",
+    bend2: "bend2.png"
+  };
+
+  // Detect when cactus enters the danger zone
+  setInterval(() => {
+    const cactusRect = cactus.getBoundingClientRect();
+    if (cactusRect.left < window.innerWidth * 0.4) {
+      cactusInDangerZone = true;
+    } else {
+      cactusInDangerZone = false;
+    }
+  }, 50);
+
+  document.addEventListener("keydown", e => {
+    if (e.code === "Space" && !isJumping && !gameOver) jump();
+  });
+
+  document.getElementById("gameArea").addEventListener("touchstart", () => {
+    if (!isJumping && !gameOver) jump();
+  });
+
+  function jump() {
+    isJumping = true;
+    jumpSound.currentTime = 0;
+    jumpSound.play();
+    dinoImg.src = frames.bend1;
+
+    setTimeout(() => { dinoImg.src = frames.jump; }, 100);
+
+    let jumpHeight = isMobile ? 160 : 200;
+    let jumpStep = isMobile ? 7 : 10;
+
+    let upInterval = setInterval(() => {
+      if (position >= jumpHeight) {
+        clearInterval(upInterval);
+        let downInterval = setInterval(() => {
+          if (position <= 0) {
+            clearInterval(downInterval);
             isJumping = false;
-        }, 500);
+            dinoImg.src = frames.bend2;
+            setTimeout(() => { dinoImg.src = frames.stand1; }, 100);
+          } else {
+            position -= jumpStep;
+            dino.style.bottom = `calc(${25}vh + 10px + ${position}px)`;
+          }
+        }, 15);
+      } else {
+        position += jumpStep;
+        dino.style.bottom = `calc(${25}vh + 10px + ${position}px)`;
+      }
+    }, 15);
+  }
+
+  const collisionCheck = setInterval(() => {
+    if (!cactusInDangerZone || gameOver) return; // ⬅ Only check collisions in danger zone
+
+    const dinoRect = dino.getBoundingClientRect();
+    const cactusRect = cactus.getBoundingClientRect();
+    const bufferX = 40, bufferY = 40;
+
+    const isHorizontallyOverlapping =
+      cactusRect.left < dinoRect.right - bufferX &&
+      cactusRect.right > dinoRect.left + bufferX;
+
+    const isVerticallyOverlapping =
+      dinoRect.bottom - bufferY > cactusRect.top;
+
+    if (isHorizontallyOverlapping && isVerticallyOverlapping) {
+      gameOver = true;
+      gameOverScreen.style.display = "flex";
+      clearInterval(scoreInterval);
+      cactus.style.animationPlayState = "paused";
+      collisionSound.currentTime = 0;
+      collisionSound.play();
     }
+  }, 10);
 
-    function startCactusMovement() {
-        cactus.style.display = 'block';
-        cactus.style.right = '-50px';
-
-        cactusInterval = setInterval(() => {
-            let cactusRight = parseInt(getComputedStyle(cactus).right);
-            cactusRight += 5;
-            cactus.style.right = cactusRight + 'px';
-
-            if (cactusRight > 650) {
-                cactus.style.right = '-50px';
-            }
-
-            // Collision detection
-            let dinoBottom = parseInt(getComputedStyle(dino).bottom);
-            if (cactusRight > 500 && cactusRight < 550 && dinoBottom < 40) {
-                alert('Game Over!');
-                resetGame();
-            }
-        }, 20);
+  const scoreInterval = setInterval(() => {
+    if (!document.hidden && !gameOver) {
+      score++;
+      scoreDisplay.textContent = "Score: " + score;
     }
-
-    function resetGame() {
-        clearInterval(cactusInterval);
-        cactus.style.display = 'none';
-        gameStarted = false;
-    }
-
-    document.addEventListener('keydown', (event) => {
-        if (event.code === 'Space') {
-            jump();
-            if (!gameStarted) {
-                gameStarted = true;
-                startCactusMovement();
-            }
-        }
-    });
-
-    document.addEventListener('touchstart', () => {
-        jump();
-        if (!gameStarted) {
-            gameStarted = true;
-            startCactusMovement();
-        }
-    });
+  }, 100);
 </script>
+
 
 </body>
 </html>
