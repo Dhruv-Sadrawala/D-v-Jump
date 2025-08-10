@@ -13,91 +13,51 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #fff; }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #fff;
-    }
-
-    .game {
-      width: 100vw;
-      height: 100vh;
-      position: relative;
-      overflow: hidden;
-    }
+    .game { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
 
     .background {
-      position: absolute;
-      width: 100%;
-      height: 100%;
+      position: absolute; width: 100%; height: 100%;
       background: url('bg.jpg') no-repeat center center;
-      background-size: cover;
-      z-index: 0;
+      background-size: cover; z-index: 0;
     }
 
     .overlay {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.3);
-      z-index: 1;
+      position: absolute; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.3); z-index: 1;
     }
 
     #ground {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 40px;
-      background: url('ground.png') repeat-x;
-      z-index: 2;
+      position: absolute; bottom: 0; width: 100%; height: 40px;
+      background: url('ground.png') repeat-x; z-index: 2;
     }
 
     #baseline {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 10px;
-      background-color: #cdf0fc;
-      z-index: 3;
+      position: absolute; bottom: 25vh; /* ⬆ Moved baseline up */
+      width: 100%; height: 10px; background-color: #cdf0fc; z-index: 3;
     }
 
     #dino {
-      width: 130px;
-      height: 200px;
-      position: absolute;
-      bottom: 10px;
-      left: 50px;
-      z-index: 4;
+      width: 130px; height: 200px;
+      position: absolute; bottom: calc(25vh + 10px); /* ⬆ Match baseline height */
+      left: 50px; z-index: 4;
     }
 
     #dino img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+      width: 100%; height: 100%; object-fit: contain;
       image-rendering: pixelated;
     }
 
     #cactus {
-      width: 70px;
-      height: 100px;
-      position: absolute;
-      bottom: 10px;
-      right: -70px;
-      animation: moveCactus 3s linear infinite;
-      z-index: 4;
+      width: 70px; height: 100px;
+      position: absolute; bottom: calc(25vh + 10px); /* ⬆ Same as dino */
+      right: -70px; animation: moveCactus 3s linear infinite; z-index: 4;
     }
 
     #cactus img {
-      width: 100%;
-      height: 120%;
-      object-fit: contain;
+      width: 100%; height: 120%; object-fit: contain;
       image-rendering: pixelated;
     }
 
@@ -107,97 +67,49 @@
     }
 
     #score {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      color: #fff;
-      font-family: 'Press Start 2P', cursive;
-      font-size: 16px;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 4px 8px;
-      border-radius: 4px;
-      box-shadow: 0 0 3px #000;
-      z-index: 10;
+      position: absolute; top: 10px; right: 20px;
+      color: #fff; font-family: 'Press Start 2P', cursive;
+      font-size: 16px; background: rgba(0, 0, 0, 0.5);
+      padding: 4px 8px; border-radius: 4px;
+      box-shadow: 0 0 3px #000; z-index: 10;
     }
 
-    /* Game Over Overlay */
     #gameOverScreen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
       background-color: rgba(0,0,0,0.5);
-      z-index: 20;
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      z-index: 20; display: none;
+      flex-direction: column; justify-content: center; align-items: center;
     }
 
     .game-over-text {
       font-family: 'Press Start 2P', cursive;
-      font-size: 50px;
-      color: white;
-      margin-bottom: 30px;
-      text-shadow: 2px 2px 5px #000;
+      font-size: 50px; color: white;
+      margin-bottom: 30px; text-shadow: 2px 2px 5px #000;
     }
 
     .replay-icon {
       font-family: 'Press Start 2P', cursive;
-      font-size: 50px;
-      color: white;
-      cursor: pointer;
-      padding: 16px 24px;
-      background-color: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      text-shadow: 1px 1px 3px #000;
+      font-size: 50px; color: white; cursor: pointer;
+      padding: 16px 24px; background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 12px; text-shadow: 1px 1px 3px #000;
       transition: transform 0.2s;
     }
+    .replay-icon:hover { transform: scale(1.1); }
 
-    .replay-icon:hover {
-      transform: scale(1.1);
-    }
-
-    /* ✅ RESPONSIVENESS without changing actual element sizes */
     @media (max-width: 768px) {
-      #dino {
-        height: 170px;
-      }
-
-      #baseline {
-        background-color: #cdf0fc;
-      }
-
-      #cactus {
-        height: 80px;
-        animation: moveCactus 3s linear infinite;
-        animation-duration: 1.5s !important;
-      }
-
-      #cactus img {
-        height: 70%; /* Adjust image scaling */
-      }
-
-      .game-over-text {
-        font-size: 30px;
-      }
-
-      .replay-icon {
-        font-size: 30px;
-        padding: 12px 18px;
-      }
-
-      #score {
-        font-size: 15px;
-      }
+      #dino { height: 170px; }
+      #cactus { height: 80px; animation-duration: 1.5s; }
+      #cactus img { height: 70%; }
+      .game-over-text { font-size: 30px; }
+      .replay-icon { font-size: 30px; padding: 12px 18px; }
+      #score { font-size: 15px; }
     }
-
   </style>
 </head>
 <body>
 
-<div class="game">
+<div class="game" id="gameArea">
   <div class="background"></div>
   <div class="overlay"></div>
 
@@ -215,7 +127,6 @@
   <div id="baseline"></div>
 </div>
 
-<!-- Game Over Overlay -->
 <div id="gameOverScreen">
   <div class="game-over-text">Game Over</div>
   <div class="replay-icon" onclick="location.reload()">
@@ -223,7 +134,6 @@
   </div>
 </div>
 
-<!-- ✅ Audio Elements -->
 <audio id="jumpSound" src="https://cdn.freesound.org/previews/386/386629_3905081-lq.mp3"></audio>
 <audio id="collisionSound" src="https://cdn.freesound.org/previews/391/391658_7368738-lq.mp3"></audio>
 
@@ -234,13 +144,14 @@
   const scoreDisplay = document.getElementById("score");
   const gameOverScreen = document.getElementById("gameOverScreen");
 
-  const jumpSound = document.getElementById("jumpSound"); // ✅
-  const collisionSound = document.getElementById("collisionSound"); // ✅
+  const jumpSound = document.getElementById("jumpSound");
+  const collisionSound = document.getElementById("collisionSound");
 
   let isJumping = false;
   let position = 0;
   let score = 0;
   let gameOver = false;
+  const isMobile = window.innerWidth <= 768;
 
   const frames = {
     stand1: "stand1.png",
@@ -249,43 +160,42 @@
     bend2: "bend2.png"
   };
 
-  document.addEventListener("keydown", function (event) {
-    if (event.code === "Space" && !isJumping && !gameOver) {
-      jump();
-    }
+  document.addEventListener("keydown", e => {
+    if (e.code === "Space" && !isJumping && !gameOver) jump();
+  });
+
+  document.getElementById("gameArea").addEventListener("touchstart", () => {
+    if (!isJumping && !gameOver) jump();
   });
 
   function jump() {
     isJumping = true;
-    jumpSound.currentTime = 0; // ✅
-    jumpSound.play(); // ✅
+    jumpSound.currentTime = 0;
+    jumpSound.play();
     dinoImg.src = frames.bend1;
 
-    setTimeout(() => {
-      dinoImg.src = frames.jump;
-    }, 100);
+    setTimeout(() => { dinoImg.src = frames.jump; }, 100);
+
+    let jumpHeight = isMobile ? 160 : 200;
+    let jumpStep = isMobile ? 7 : 10; // Faster jump on mobile
 
     let upInterval = setInterval(() => {
-      if (position >= 200) {
+      if (position >= jumpHeight) {
         clearInterval(upInterval);
-
         let downInterval = setInterval(() => {
           if (position <= 0) {
             clearInterval(downInterval);
             isJumping = false;
             dinoImg.src = frames.bend2;
-
-            setTimeout(() => {
-              dinoImg.src = frames.stand1;
-            }, 100);
+            setTimeout(() => { dinoImg.src = frames.stand1; }, 100);
           } else {
-            position -= 10;
-            dino.style.bottom = position + 10 + "px";
+            position -= jumpStep;
+            dino.style.bottom = `calc(${25}vh + 10px + ${position}px)`;
           }
         }, 15);
       } else {
-        position += 10;
-        dino.style.bottom = position + 10 + "px";
+        position += jumpStep;
+        dino.style.bottom = `calc(${25}vh + 10px + ${position}px)`;
       }
     }, 15);
   }
@@ -293,23 +203,22 @@
   const collisionCheck = setInterval(() => {
     const dinoRect = dino.getBoundingClientRect();
     const cactusRect = cactus.getBoundingClientRect();
+    const bufferX = 40, bufferY = 40;
 
-    const bufferX = 40;
-    const bufferY = 40;
+    const isHorizontallyOverlapping =
+      cactusRect.left < dinoRect.right - bufferX &&
+      cactusRect.right > dinoRect.left + bufferX;
 
-    const isHorizontallyOverlapping = cactusRect.left < dinoRect.right - bufferX &&
-                                      cactusRect.right > dinoRect.left + bufferX;
-
-    const isVerticallyOverlapping = dinoRect.bottom - bufferY > cactusRect.top;
+    const isVerticallyOverlapping =
+      dinoRect.bottom - bufferY > cactusRect.top;
 
     if (isHorizontallyOverlapping && isVerticallyOverlapping && !gameOver) {
       gameOver = true;
       gameOverScreen.style.display = "flex";
       clearInterval(scoreInterval);
       cactus.style.animationPlayState = "paused";
-
-      collisionSound.currentTime = 0; // ✅
-      collisionSound.play(); // ✅
+      collisionSound.currentTime = 0;
+      collisionSound.play();
     }
   }, 10);
 
