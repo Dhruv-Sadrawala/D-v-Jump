@@ -9,6 +9,7 @@
   <meta property="og:type" content="website" />
   <title>D^v Jump – Jump Over Bugs and Compile to Glory</title>
 
+  <!-- Pixel Font -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
   <style>
@@ -36,7 +37,7 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      background: url('https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/bg.jpg') no-repeat center center;
+      background: url('bg.jpg') no-repeat center center;
       background-size: cover;
       z-index: 0;
     }
@@ -45,7 +46,7 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.3);
       z-index: 1;
     }
 
@@ -54,7 +55,7 @@
       bottom: 0;
       width: 100%;
       height: 40px;
-      background: url('https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/ground.png') repeat-x;
+      background: url('ground.png') repeat-x;
       z-index: 2;
     }
 
@@ -63,7 +64,7 @@
       bottom: 0;
       width: 100%;
       height: 10px;
-      background-color: #5a3a1c;
+      background-color: #cdf0fc;
       z-index: 3;
     }
 
@@ -119,6 +120,7 @@
       z-index: 10;
     }
 
+    /* Game Over Overlay */
     #gameOverScreen {
       position: fixed;
       top: 0;
@@ -142,9 +144,14 @@
     }
 
     .replay-icon {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 50px;
+      color: white;
       cursor: pointer;
       padding: 16px 24px;
+      background-color: rgba(255, 255, 255, 0.1);
       border-radius: 12px;
+      text-shadow: 1px 1px 3px #000;
       transition: transform 0.2s;
     }
 
@@ -152,28 +159,24 @@
       transform: scale(1.1);
     }
 
-    /* ✅ Responsive Update */
+    /* ✅ RESPONSIVENESS without changing actual element sizes */
     @media (max-width: 768px) {
-      #dino, #cactus, #ground, #baseline {
-      bottom: 25vh;
-      }
-
-      #baseline {
-        height: 25vh;
-        background-color: #cdf0fc;
-      }
-
       #dino {
         height: 170px;
       }
 
+      #baseline {
+        background-color: #cdf0fc;
+      }
+
       #cactus {
         height: 80px;
-        animation-duration: 2.25s !important;
+        animation: moveCactus 3s linear infinite;
+        animation-duration: 1.5s !important;
       }
 
       #cactus img {
-        height: 70%;
+        height: 70%; /* Adjust image scaling */
       }
 
       .game-over-text {
@@ -189,35 +192,38 @@
         font-size: 15px;
       }
     }
+
   </style>
 </head>
 <body>
 
-<div class="game" id="gameArea">
+<div class="game">
   <div class="background"></div>
   <div class="overlay"></div>
 
   <div id="score">Score: 0</div>
 
   <div id="dino">
-    <img id="dinoImg" src="https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/stand1.png" alt="dino" />
+    <img id="dinoImg" src="stand1.png" alt="dino" />
   </div>
 
   <div id="cactus">
-    <img src="https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/cactus.png" alt="cactus" />
+    <img src="cactus.png" alt="cactus" />
   </div>
 
   <div id="ground"></div>
   <div id="baseline"></div>
 </div>
 
+<!-- Game Over Overlay -->
 <div id="gameOverScreen">
   <div class="game-over-text">Game Over</div>
   <div class="replay-icon" onclick="location.reload()">
-    <img src="https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/retry.png" height="50px" width="50px" alt="Retry" />
+    <img src="retry.png" height="50px" width="50px" alt="Retry" />
   </div>
 </div>
 
+<!-- ✅ Audio Elements -->
 <audio id="jumpSound" src="https://cdn.freesound.org/previews/386/386629_3905081-lq.mp3"></audio>
 <audio id="collisionSound" src="https://cdn.freesound.org/previews/391/391658_7368738-lq.mp3"></audio>
 
@@ -227,9 +233,9 @@
   const cactus = document.getElementById("cactus");
   const scoreDisplay = document.getElementById("score");
   const gameOverScreen = document.getElementById("gameOverScreen");
-  const jumpSound = document.getElementById("jumpSound");
-  const collisionSound = document.getElementById("collisionSound");
-  const gameArea = document.getElementById("gameArea");
+
+  const jumpSound = document.getElementById("jumpSound"); // ✅
+  const collisionSound = document.getElementById("collisionSound"); // ✅
 
   let isJumping = false;
   let position = 0;
@@ -237,71 +243,73 @@
   let gameOver = false;
 
   const frames = {
-    stand1: "https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/stand1.png",
-    bend1: "https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/bend1.png",
-    jump: "https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/jump1.png",
-    bend2: "https://raw.githubusercontent.com/Dhruv-Sadrawala/D-v-Jump/main/bend2.png"
+    stand1: "stand1.png",
+    bend1: "bend1.png",
+    jump: "jump1.png",
+    bend2: "bend2.png"
   };
 
-  function jump() {
-      if (isJumping || gameOver) return;
-      isJumping = true;
-    
-      jumpSound.currentTime = 0;
-      jumpSound.play();
-      dinoImg.src = frames.bend1;
-    
-      setTimeout(() => {
-        dinoImg.src = frames.jump;
-      }, 100);
-    
-      const baseBottom = parseFloat(getComputedStyle(dino).bottom); // ← capture starting bottom
-      let relativePosition = 0;
-    
-      const upInterval = setInterval(() => {
-        if (relativePosition >= 200) {
-          clearInterval(upInterval);
-          const downInterval = setInterval(() => {
-            if (relativePosition <= 0) {
-              clearInterval(downInterval);
-              isJumping = false;
-              dinoImg.src = frames.bend2;
-              setTimeout(() => dinoImg.src = frames.stand1, 100);
-            } else {
-              relativePosition -= 10;
-              dino.style.bottom = baseBottom + relativePosition + "px";
-            }
-          }, 15);
-        } else {
-          relativePosition += 10;
-          dino.style.bottom = baseBottom + relativePosition + "px";
-        }
-      }, 20);
+  document.addEventListener("keydown", function (event) {
+    if (event.code === "Space" && !isJumping && !gameOver) {
+      jump();
     }
-
-
-  document.addEventListener("keydown", (e) => {
-    if (e.code === "Space") jump();
   });
 
-  gameArea.addEventListener("touchstart", jump);
+  function jump() {
+    isJumping = true;
+    jumpSound.currentTime = 0; // ✅
+    jumpSound.play(); // ✅
+    dinoImg.src = frames.bend1;
+
+    setTimeout(() => {
+      dinoImg.src = frames.jump;
+    }, 100);
+
+    let upInterval = setInterval(() => {
+      if (position >= 200) {
+        clearInterval(upInterval);
+
+        let downInterval = setInterval(() => {
+          if (position <= 0) {
+            clearInterval(downInterval);
+            isJumping = false;
+            dinoImg.src = frames.bend2;
+
+            setTimeout(() => {
+              dinoImg.src = frames.stand1;
+            }, 100);
+          } else {
+            position -= 10;
+            dino.style.bottom = position + 10 + "px";
+          }
+        }, 15);
+      } else {
+        position += 10;
+        dino.style.bottom = position + 10 + "px";
+      }
+    }, 15);
+  }
 
   const collisionCheck = setInterval(() => {
     const dinoRect = dino.getBoundingClientRect();
     const cactusRect = cactus.getBoundingClientRect();
-    const bufferX = 50, bufferY = 50;
 
-    const horizontal = cactusRect.left < dinoRect.right - bufferX &&
-                       cactusRect.right > dinoRect.left + bufferX;
-    const vertical = dinoRect.bottom - bufferY > cactusRect.top;
+    const bufferX = 40;
+    const bufferY = 40;
 
-    if (horizontal && vertical && !gameOver) {
+    const isHorizontallyOverlapping = cactusRect.left < dinoRect.right - bufferX &&
+                                      cactusRect.right > dinoRect.left + bufferX;
+
+    const isVerticallyOverlapping = dinoRect.bottom - bufferY > cactusRect.top;
+
+    if (isHorizontallyOverlapping && isVerticallyOverlapping && !gameOver) {
       gameOver = true;
       gameOverScreen.style.display = "flex";
       clearInterval(scoreInterval);
       cactus.style.animationPlayState = "paused";
-      collisionSound.currentTime = 0;
-      collisionSound.play();
+
+      collisionSound.currentTime = 0; // ✅
+      collisionSound.play(); // ✅
     }
   }, 10);
 
